@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker, declarative_base, Mapped
 from sqlalchemy.testing.schema import mapped_column
@@ -37,6 +37,12 @@ def get_points():
         points = session.query(Point).all()
         data = [json.loads(p.__repr__()) for p in points]
     return data
+
+@app.route('/api/data', methods=['POST'])
+def post_points():
+    data = request.json
+    with Session() as session:
+        points = session.query(Point).all()
 
 
 
