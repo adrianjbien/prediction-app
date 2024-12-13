@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask
+from flask import Flask, render_template, jsonify
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker, declarative_base, Mapped
 from sqlalchemy.testing.schema import mapped_column
@@ -20,40 +20,26 @@ class Point(Base):
     cat: Mapped[int]
 
     def __repr__(self):
-        return f'<Point ({self.x}, {self.y}), cat: {self.cat}>'
+        return json.dumps({'id': self.id, 'x': self.x, 'y': self.y, 'cat': self.cat})
 
-    def to_JSON(self):
-        return json.dumps(
-            self,
-            default=lambda o: o.__dict__,
-            sort_keys=True,
-            indent=4)
+def display_points(points):
+    return render_template('index.html', data=points)
 
 @app.route('/', methods=['GET'])
-def display_points():
-    try:
-        with Session() as session:
-            points = session.query(Point).all()
+def home():
+    with Session() as session:
+        points = session.query(Point).all()
+        return display_points(points)
 
-            point_text = '<ul>'
-            for point in points:
-                point_text += '<li>' + str(point.x) + ', ' + str(point.y) + ', ' + str(point.cat) +'</li>'
-            point_text += '</ul>'
-            return point_text
+@app.route('/api/data', methods=['GET'])
+def get_points():
+    with Session() as session:
+        points = session.query(Point).all()
+        data = [json.loads(p.__repr__()) for p in points]
+    return data
 
-    except Exception as e:
-        error_text = "<p>The error:<br>" + str(e) + "</p>"
-        hed = '<h1>Something is broken.</h1>'
-        return hed + error_text
 
 
 if __name__ == '__main__':
     app.run()
     # Base.metadata.create_all(bind=db)
-    # point1 = Point(x=5, y=2, cat=1)
-
-
-    # with Session() as session:
-    #     session.add(point1)
-    #     session.commit()
-    #     print(session.query(Point).all())
