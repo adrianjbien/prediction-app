@@ -1,6 +1,6 @@
 import json
 
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, Response
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker, declarative_base, Mapped
 from sqlalchemy.testing.schema import mapped_column
@@ -36,10 +36,20 @@ def add_form():
     if request.method == 'POST':
         x = request.form['x']
         y = request.form['y']
-        print(x, y)
         cat = request.form['category']
+
+        try:
+            x = float(x)
+            y = float(y)
+            cat = int(cat)
+
+            point = Point(x=x, y=y, cat=cat)
+
+        except Exception:
+            error = 400
+            return render_template('error400.html', data=error), error
+
         with Session() as session:
-            point = Point(x=float(x), y=float(y), cat=int(cat))
             session.add(point)
             session.commit()
         return home()
@@ -64,4 +74,4 @@ def post_points():
 
 if __name__ == '__main__':
     app.run()
-    # Base.metadata.create_all(bind=db)
+    # Base.metadata.create_all(bind=db) # dodac ze tworzy baze jesli nie ma
