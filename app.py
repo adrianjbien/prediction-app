@@ -22,14 +22,30 @@ class Point(Base):
     def __repr__(self):
         return json.dumps({'id': self.id, 'x': self.x, 'y': self.y, 'cat': self.cat})
 
-def display_points(points):
-    return render_template('index.html', data=points)
+def display_table_points(points):
+    return render_template('home.html', data=points)
 
-@app.route('/', methods=['GET'])
+@app.route('/')
 def home():
     with Session() as session:
         points = session.query(Point).all()
-        return display_points(points)
+        return display_table_points(points)
+
+@app.route('/add', methods=['POST', 'GET'])
+def add_form():
+    if request.method == 'POST':
+        x = request.form['x']
+        y = request.form['y']
+        print(x, y)
+        cat = request.form['category']
+        with Session() as session:
+            point = Point(x=float(x), y=float(y), cat=int(cat))
+            session.add(point)
+            session.commit()
+        return home()
+
+    return render_template('add_form.html')
+
 
 @app.route('/api/data', methods=['GET'])
 def get_points():

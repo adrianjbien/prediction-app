@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add new point</title>
+</head>
+<body>
+    <form action="{{ url_for("add_form") }}" method="post">
+    <label for="x">x:</label><br>
+    <input type="text" id="x" name="x"><br>
+    <label for="y">y:</label><br>
+    <input type="text" id="y" name="y">
+    <label for="cat">category:</label>
+    <input type="text" id="cat" name="category">
+    <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
