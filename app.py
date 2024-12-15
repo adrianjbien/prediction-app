@@ -57,6 +57,19 @@ def add_form():
 
     return render_template('add_form.html')
 
+@app.route('/remove/<int:record_id>', methods=['POST'])
+def remove_point(record_id):
+    if request.method == 'POST':
+        with Session() as session:
+            temp = session.query(Point).get(record_id)
+            if temp is None:
+                error = 404
+                return render_template('error404.html', data=error), error
+            else:
+                session.delete(temp)
+                session.commit()
+        return home()
+
 
 @app.route('/api/data', methods=['GET'])
 def get_points():
@@ -101,6 +114,8 @@ def post_points():
     data['id'] = primary_key
 
     return data
+
+
 
 
 

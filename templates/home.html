@@ -29,7 +29,11 @@
                 <td>{{ row['x'] }}</td>
                 <td>{{ row['y'] }}</td>
                 <td>{{ row['cat'] }}</td>
-                <td><button>Remove point</button></td>
+                <td>
+                    <form action="{{ url_for("remove_point", record_id=row['id']) }}" method="post">
+                        <input type="submit" value="Remove point">
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
