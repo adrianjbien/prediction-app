@@ -22,6 +22,7 @@ class Point(Base):
     def __repr__(self):
         return json.dumps({'id': self.id, 'x': self.x, 'y': self.y, 'cat': self.cat})
 
+
 def display_table_points(points):
     return render_template('home.html', data=points)
 
@@ -67,8 +68,40 @@ def get_points():
 @app.route('/api/data', methods=['POST'])
 def post_points():
     data = request.json
+    error_message = {"message": "Error 400, Invalid data"}
+    error = 400
+    required_keys = ['x', 'y', 'cat']
+
+    if not data:
+        return error_message, error
+
+    if type(data) is not dict:
+        return error_message, error
+
+    for key in data:
+        if key not in required_keys:
+            return error_message, error
+
+    try:
+        x = float(data['x'])
+        y = float(data['y'])
+        cat = int(data['cat'])
+
+        point = Point(x=x, y=y, cat=cat)
+
+    except Exception:
+        return error_message, error
+
     with Session() as session:
-        points = session.query(Point).all()
+        session.add(point)
+        session.flush()
+        session.refresh(point)
+        primary_key = point.id
+        session.commit()
+    data['id'] = primary_key
+
+    return data
+
 
 
 
