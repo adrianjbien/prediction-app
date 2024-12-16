@@ -111,10 +111,27 @@ def post_points():
         session.refresh(point)
         primary_key = point.id
         session.commit()
-    data['id'] = primary_key
 
-    return data
+    return {"id": primary_key}
 
+@app.route('/api/data/<int:record_id>', methods=['DELETE'])
+def remove_point_api(record_id):
+
+    data = {"id": None}
+    error_message = {"message": "Error 404, Record not found"}
+    error = 404
+
+    with Session() as session:
+        temp = session.query(Point).get(record_id)
+        if temp is None:
+            return error_message, error
+        else:
+            session.delete(temp)
+            primary_key = temp.id
+            session.commit()
+
+            data['id'] = primary_key
+            return data
 
 
 
