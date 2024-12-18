@@ -23,14 +23,11 @@ class Point(Base):
         return json.dumps({'id': self.id, 'x': self.x, 'y': self.y, 'cat': self.cat})
 
 
-def display_table_points(points):
-    return render_template('home.html', data=points)
-
 @app.route('/')
 def home():
     with Session() as session:
         points = session.query(Point).all()
-        return display_table_points(points)
+        return render_template('home.html', data=points)
 
 @app.route('/add', methods=['POST', 'GET'])
 def add_form():
@@ -69,6 +66,11 @@ def remove_point(record_id):
                 session.delete(temp)
                 session.commit()
         return home()
+
+
+@app.route('/predict', methods=['POST', 'GET'])
+def predict_form():
+    return render_template("prediction_form.html")
 
 
 @app.route('/api/data', methods=['GET'])
