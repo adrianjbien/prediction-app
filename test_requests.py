@@ -40,9 +40,3 @@ from sklearn.neighbors import KNeighborsClassifier
 # response = requests.delete(url)
 # print(response.text)
 
-if __name__ == '__main__':
-    neigh = KNeighborsClassifier(n_neighbors=3)
-    X = [[3.14, 2.56], [3.24, 2.5], [1.12, 3.4], [1.4, 3.11]]
-    y = [1, 1, 2, 2]
-    neigh.fit(X, y)
-    print(neigh.predict([[3.14, 2.56], [1.32, 3.22]]))

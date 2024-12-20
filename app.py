@@ -24,11 +24,26 @@ class Point(Base):
         return json.dumps({'id': self.id, 'x': self.x, 'y': self.y, 'cat': self.cat})
 
 
+def validate(x, y, cat):
+    try:
+        x = float(x)
+        y = float(y)
+        cat = int(cat)
+
+        point = Point(x=x, y=y, cat=cat)
+
+    except Exception:
+        error = 400
+        return render_template('error400.html', data=error), error
+
+
+
 @app.route('/')
 def home():
     with Session() as session:
         points = session.query(Point).all()
         return render_template('home.html', data=points)
+
 
 @app.route('/add', methods=['POST', 'GET'])
 def add_form():
@@ -55,6 +70,7 @@ def add_form():
 
     return render_template('add_form.html')
 
+
 @app.route('/remove/<int:record_id>', methods=['POST'])
 def remove_point(record_id):
     if request.method == 'POST':
@@ -71,6 +87,27 @@ def remove_point(record_id):
 
 @app.route('/predict', methods=['POST', 'GET'])
 def predict_form():
+    if request.method == 'POST':
+        all_data = get_points()
+        neigh = KNeighborsClassifier(n_neighbors=3)
+        points = [[point['x'], point['y']] for point in all_data]
+        categories = [point['cat'] for point in all_data]
+        neigh.fit(points, categories)
+
+        x = request.form['x']
+        y = request.form['y']
+
+        try:
+
+            x = float(x)
+            y = float(y)
+            predicted_cat = neigh.predict([[x, y]])
+            return render_template("predicted_cat.html", data=predicted_cat)
+        except Exception:
+
+            error = 400
+            return render_template('error400.html', data=error), error
+
     return render_template("prediction_form.html")
 
 
@@ -80,6 +117,7 @@ def get_points():
         points = session.query(Point).all()
         data = [json.loads(p.__repr__()) for p in points]
     return data
+
 
 @app.route('/api/data', methods=['POST'])
 def post_points():
@@ -117,6 +155,7 @@ def post_points():
 
     return {"id": primary_key}
 
+
 @app.route('/api/data/<int:record_id>', methods=['DELETE'])
 def remove_point_api(record_id):
 
@@ -135,9 +174,6 @@ def remove_point_api(record_id):
 
             data['id'] = primary_key
             return data
-
-
-
 
 
 if __name__ == '__main__':
