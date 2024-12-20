@@ -4,6 +4,7 @@ from flask import Flask, render_template, jsonify, request, Response
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker, declarative_base, Mapped
 from sqlalchemy.testing.schema import mapped_column
+from sklearn.neighbors import KNeighborsClassifier
 
 app = Flask(__name__)
 
@@ -140,5 +141,7 @@ def remove_point_api(record_id):
 
 
 if __name__ == '__main__':
-    app.run()
+    # app.run()
     # Base.metadata.create_all(bind=db) # dodac ze tworzy baze jesli nie ma
+    cos = 2
+
