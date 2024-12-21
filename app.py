@@ -2,6 +2,7 @@ import json
 
 from flask import Flask, render_template, jsonify, request, Response
 import sqlalchemy as sa
+from sklearn.preprocessing import StandardScaler
 from sqlalchemy.orm import sessionmaker, declarative_base, Mapped
 from sqlalchemy.testing.schema import mapped_column
 from sklearn.neighbors import KNeighborsClassifier
@@ -89,10 +90,17 @@ def remove_point(record_id):
 def predict_form():
     if request.method == 'POST':
         all_data = get_points()
-        neigh = KNeighborsClassifier(n_neighbors=3)
+
         points = [[point['x'], point['y']] for point in all_data]
         categories = [point['cat'] for point in all_data]
+
+        scaler = StandardScaler()
+        scaler.fit(points)
+        points = scaler.transform(points)
+
+        neigh = KNeighborsClassifier(n_neighbors=3)
         neigh.fit(points, categories)
+
 
         x = request.form['x']
         y = request.form['y']
@@ -101,8 +109,13 @@ def predict_form():
 
             x = float(x)
             y = float(y)
-            predicted_cat = neigh.predict([[x, y]])
-            return render_template("predicted_cat.html", data=predicted_cat)
+
+            point_to_predict = [x, y]
+            scaler.fit(point_to_predict)
+            point_to_predict = scaler.transform(point_to_predict)
+
+            predicted_cat = neigh.predict([point_to_predict])
+            return render_template("predicted_cat.html", data=int(predicted_cat))
         except Exception:
 
             error = 400
