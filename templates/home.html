@@ -30,7 +30,7 @@
                 <td>{{ row['y'] }}</td>
                 <td>{{ row['cat'] }}</td>
                 <td>
-                    <form action="{{ url_for("remove_point", record_id=row['id']) }}" method="post">
+                    <form action="{{ url_for("routes.remove_point", record_id=row['id']) }}" method="post">
                         <input type="submit" value="Remove point">
                     </form>
                 </td>
