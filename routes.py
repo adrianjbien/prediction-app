@@ -42,7 +42,7 @@ def add_form():
     return render_template('add_form.html')
 
 
-@routes.route('/remove/<int:record_id>', methods=['POST'])
+@routes.route('/delete/<int:record_id>', methods=['POST'])
 def remove_point(record_id):
     if request.method == 'POST':
         with Session() as session:
@@ -152,6 +152,6 @@ def predict_api():
         return {"predicted_cat": predicted_cat}
 
     except Exception:
-        error_message = {"message": "Error 404, Invalid data"}
+        error_message = {"message": "Error 400, Invalid data"}
         error = 400
         return error_message, error
