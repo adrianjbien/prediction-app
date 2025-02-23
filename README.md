@@ -1,6 +1,6 @@
-Point Category Predictor
+# Point Category Predictor
 
-# Overview
+## Overview
 
 This is a simple web application that predicts the category of points based on their (x, y) coordinates. The project is built using Flask as the backend framework, SQLAlchemy for database management, and SQLite for data storage. The frontend is designed using basic HTML with simple Bootstrap for styling.
 
